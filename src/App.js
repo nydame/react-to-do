@@ -11,8 +11,42 @@ class App extends Component {
                 { description: 'Throw the dishes away', isCompleted: false },
                 { description: 'Buy new dishes', isCompleted: false },
             ],
+            newTodoDescription: '',
         };
     }
+    // unbound
+    handleChange(e) {
+        this.setState({ newTodoDescription: e.target.value });
+    }
+    // unbound
+    handleSubmit(e) {
+        e.preventDefault();
+        if (!this.state.newTodoDescription.trim()) {
+            return;
+        }
+        const newTodo = {
+            description: this.state.newTodoDescription,
+            isCompleted: false,
+        };
+        this.setState({
+            todos: [...this.state.todos, newTodo],
+            newTodoDescription: '',
+        });
+    }
+
+    // define props here
+    // Event handler to change isCompleted for todo in question
+    toggleComplete(index) {
+        // create a brand new copy of state.todos using slice()
+        const todos = this.state.todos.slice();
+        // in the new copy, find the todo item of interest...
+        const todo = todos[index];
+        // ...and toggle the value of isCompleted
+        todo.isCompleted = !todo.isCompleted;
+        // finally tear up the old state.todos and replace it with the updated copy
+        this.setState({ todos: todos });
+    }
+
     render() {
         return (
             <div className="App">
@@ -22,9 +56,18 @@ class App extends Component {
                             key={index}
                             description={todo.description}
                             isCompleted={todo.isCompleted}
+                            toggleComplete={() => this.toggleComplete(index)}
                         />
                     ))}
                 </ul>
+                <form onSubmit={e => this.handleSubmit(e)}>
+                    <input
+                        type="text"
+                        value={this.state.newTodoDescription}
+                        onChange={e => this.handleChange(e)}
+                    />
+                    <input type="submit" />
+                </form>
             </div>
         );
     }
